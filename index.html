@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sukrit's Portfolio — Generative AI & Software Engineer</title>
+  <meta name="description" content="Sukrit's Portfolio — Generative AI & Software Engineer specializing in Multi-Agent Systems, RAG Architectures, Google ADK, Gemini Enterprise, and Cloud Backend Integrations.">
+  <meta name="keywords" content="Sukrit's Portfolio, Sukrit Debnath, Generative AI, Multi-Agent Systems, Three.js, Google ADK, Gemini, RAG, Software Engineer">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- External CDNs: Three.js, OrbitControls, GSAP, PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+
+  <!-- Three.js 3D Background Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- 3D Node Raycaster Tooltip HUD -->
+  <div id="node-tooltip"></div>
+
+  <!-- Floating 3D Scene Controls Dock -->
+  <div class="scene-controls-dock glassmorphism" id="scene-controls-dock" aria-label="3D Controls">
+    <div class="dock-header">
+      <span class="dock-indicator"></span>
+      <span class="dock-label">3D Environment</span>
+    </div>
+    <div class="dock-btn-group">
+      <button class="dock-btn active" id="btn-shape-knot" title="Fluid Ribbon Model">Ribbon</button>
+      <button class="dock-btn" id="btn-shape-crystal" title="Quantum Crystal Model">Crystal</button>
+      <button class="dock-btn" id="btn-shape-torus" title="Neural Torus Model">Torus</button>
+      <div class="dock-divider"></div>
+      <button class="dock-btn-icon" id="btn-toggle-orbit" title="Toggle 360° Free Orbit (Click & Drag to Rotate)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        <span id="orbit-mode-label">Orbit: On</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Wrapper -->
+  <div class="content-wrapper">
+
+    <!-- Top Navigation Bar -->
+    <header>
+      <nav class="navbar glassmorphism" aria-label="Main Navigation">
+        <a href="#hero" class="nav-brand">
+          <span class="brand-dot"></span>
+          <span>Sukrit's Portfolio</span>
+          <span class="nav-brand-tag">3D Interactive</span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="#hero" class="nav-link">Overview</a></li>
+          <li><a href="#experience" class="nav-link">Experience</a></li>
+          <li><a href="#projects" class="nav-link">Projects</a></li>
+          <li><a href="#skills" class="nav-link">Skills</a></li>
+          <li><a href="#education" class="nav-link">Education</a></li>
+          <li><a href="#certifications" class="nav-link">Certifications</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <button id="sound-toggle-btn" class="icon-btn-pill" title="Toggle Audio Feedback" aria-label="Sound Toggle">
+            <span id="sound-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
+            </span>
+          </button>
+          <button id="btn-open-sync-modal" class="action-btn-pill" title="Upload new resume to automatically re-render portfolio">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <span>Sync Resume</span>
+          </button>
+          <button id="mobile-nav-toggle" class="mobile-toggle" aria-label="Toggle Menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Sections -->
+    <main class="main-content">
+
+      <!-- SECTION: Hero / Overview -->
+      <section id="hero" class="portfolio-section">
+        <div class="hero-grid">
+          <div class="hero-left">
+            <div class="status-badge">
+              <span class="pulse-indicator"></span>
+              <span>ENTERPRISE AI ARCHITECTURE</span>
+            </div>
+
+            <h1 class="hero-name" id="hero-name">Sukrit's Portfolio</h1>
+
+            <div class="hero-title-row">
+              <span class="hero-title-text" id="hero-title">Generative AI & Software Engineer</span>
+            </div>
+
+            <p class="hero-summary-text" id="hero-summary">
+              Generative AI & Software Engineer with experience building enterprise multi-agent systems, Retrieval-Augmented Generation (RAG) architectures, and AI-driven backend integrations. Certified in Google Gemini Enterprise Agent Development and AWS Solutions Architect.
+            </p>
+
+            <div class="hero-cta-group">
+              <a href="#projects" id="hero-btn-projects" class="btn-primary-glow">
+                <span>Explore Projects</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+              </a>
+              <a href="#contact" id="hero-btn-contact" class="btn-secondary-glow">
+                <span>Contact Me</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6"/></svg>
+              </a>
+            </div>
+
+            <div class="drag-hint-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+              <span>Tip: Click and drag anywhere to orbit 360° around the 3D model</span>
+            </div>
+          </div>
+
+          <!-- Studio Telemetry Widget -->
+          <div class="hero-right">
+            <div class="terminal-hud glassmorphism">
+              <div class="terminal-header">
+                <div class="terminal-dots">
+                  <span class="t-dot t-red"></span>
+                  <span class="t-dot t-yellow"></span>
+                  <span class="t-dot t-green"></span>
+                </div>
+                <div class="terminal-title">AGENT_ORCHESTRATION_TELEMETRY</div>
+                <div style="width: 32px"></div>
+              </div>
+
+              <div class="terminal-body">
+                <div class="terminal-line"><span class="term-cmd">engine:</span> <span class="term-agent">Google ADK & Gemini Enterprise</span></div>
+                <div class="terminal-line"><span class="term-cmd">vector_store:</span> <span class="term-val">FAISS Dense + BM25 Sparse Hybrid</span></div>
+                <div class="terminal-line"><span class="term-cmd">guardrails:</span> <span class="term-val">Pydantic Schema & Injection Filters</span></div>
+                <div class="terminal-line"><span class="term-cmd">enterprise_api:</span> <span class="term-agent">SAP Joule AI / OData CDS Views</span></div>
+                <div class="terminal-line"><span class="term-cmd">eval_accuracy:</span> <span class="term-val">100% Benchmark Score</span></div>
+
+                <div class="terminal-live-row">
+                  <span class="term-prompt">›</span>
+                  <span id="terminal-live-feed">Connecting Enterprise Multi-Agent Mesh...</span>
+                  <span class="cursor-blink">|</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Work Experience -->
+      <section id="experience" class="portfolio-section">
+        <div class="section-header">
+          <div class="section-label">
+            <span class="label-line"></span>
+            <span>Career Milestones</span>
+          </div>
+          <h2 class="section-title">Work Experience</h2>
+          <p class="section-subtitle">Pioneering enterprise AI agents, automated data parsing, and mission-critical API integrations.</p>
+        </div>
+
+        <div class="experience-timeline" id="experience-timeline">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- SECTION: Featured Projects -->
+      <section id="projects" class="portfolio-section">
+        <div class="section-header">
+          <div class="section-label">
+            <span class="label-line"></span>
+            <span>Engineering Showcase</span>
+          </div>
+          <h2 class="section-title">Featured Projects</h2>
+          <p class="section-subtitle">Multi-agent procurement, hybrid RAG document intelligence, and deep learning vision systems.</p>
+        </div>
+
+        <div class="projects-grid" id="projects-grid">
+          <!-- Rendered dynamically with 3D tilt -->
+        </div>
+      </section>
+
+      <!-- SECTION: Technical Skills -->
+      <section id="skills" class="portfolio-section">
+        <div class="section-header">
+          <div class="section-label">
+            <span class="label-line"></span>
+            <span>Technical Capabilities</span>
+          </div>
+          <h2 class="section-title">Skills & Knowledge Matrix</h2>
+          <p class="section-subtitle">Comprehensive stack spanning GenAI agent orchestration, machine learning models, cloud systems, and backend engineering.</p>
+        </div>
+
+        <div class="skills-matrix" id="skills-matrix">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- SECTION: Education & Certifications -->
+      <section id="education" class="portfolio-section">
+        <div class="section-header">
+          <div class="section-label">
+            <span class="label-line"></span>
+            <span>Academic Background</span>
+          </div>
+          <h2 class="section-title">Education</h2>
+        </div>
+
+        <div class="education-cards" id="education-cards">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- SECTION: Certifications & Honors -->
+      <section id="certifications" class="portfolio-section">
+        <div class="section-header">
+          <div class="section-label">
+            <span class="label-line"></span>
+            <span>Validated Excellence</span>
+          </div>
+          <h2 class="section-title">Certifications & Achievements</h2>
+          <p class="section-subtitle">Recognized certifications in enterprise agent engineering and award-winning capstone projects.</p>
+        </div>
+
+        <div class="certifications-grid" id="certifications-grid">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- SECTION: Contact -->
+      <section id="contact" class="portfolio-section">
+        <div class="section-header">
+          <div class="section-label">
+            <span class="label-line"></span>
+            <span>Get in Touch</span>
+          </div>
+          <h2 class="section-title">Connect & Collaborate</h2>
+          <p class="section-subtitle">Interested in enterprise multi-agent deployments, RAG architectures, or software engineering collaborations? Let's connect.</p>
+        </div>
+
+        <div class="contact-card-main glassmorphism">
+          <div class="contact-meta-group">
+            <div class="contact-row">
+              <div class="contact-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6"/></svg>
+              </div>
+              <div>
+                <div class="contact-lbl">Email Address</div>
+                <a href="mailto:sukritdebnath9@gmail.com" class="contact-val" id="contact-email">sukritdebnath9@gmail.com</a>
+              </div>
+            </div>
+
+            <div class="contact-row">
+              <div class="contact-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <div>
+                <div class="contact-lbl">Phone Number</div>
+                <div class="contact-val" id="contact-phone">+91 6204729612</div>
+              </div>
+            </div>
+
+            <div class="contact-row">
+              <div class="contact-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div>
+                <div class="contact-lbl">Location</div>
+                <div class="contact-val" id="contact-location">India</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-meta-group">
+            <div class="contact-row">
+              <div class="contact-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+              </div>
+              <div>
+                <div class="contact-lbl">LinkedIn Profile</div>
+                <a href="https://linkedin.com/in/sukritdebnath" target="_blank" rel="noopener noreferrer" class="contact-val" id="contact-linkedin">linkedin.com/in/sukritdebnath</a>
+              </div>
+            </div>
+
+            <div class="contact-row">
+              <div class="contact-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              </div>
+              <div>
+                <div class="contact-lbl">GitHub Repository</div>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="contact-val">github.com</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer style="padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+        <p>&copy; 2026 Sukrit's Portfolio. Powered by Three.js & Automated Resume Ingestion Engine.</p>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- FLOATING RESUME SYNC DOCK -->
+  <aside class="floating-sync-dock" aria-label="Resume Sync Dock">
+    <button class="dock-trigger-btn" id="dock-btn-sync" onclick="document.getElementById('btn-open-sync-modal').click()">
+      <span class="dock-sparkle">✦</span>
+      <span>Auto-Sync Resume</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+    </button>
+  </aside>
+
+  <!-- RESUME SYNC & INGESTION MODAL -->
+  <div class="sync-modal" id="sync-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-dialog">
+      <div class="modal-head">
+        <div class="modal-title-group">
+          <div class="timeline-icon-box" style="width: 36px; height: 36px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </div>
+          <h3 class="modal-title" id="modal-title">Automated Resume Ingestion Engine</h3>
+        </div>
+        <button class="btn-close" id="btn-close-modal" aria-label="Close Modal">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-tabs">
+        <button class="tab-btn active" id="tab-upload">Upload Resume (PDF/JSON)</button>
+        <button class="tab-btn" id="tab-json">Inspect / Edit Schema</button>
+      </div>
+
+      <div class="modal-content-body">
+        <!-- Tab 1: Upload -->
+        <div id="view-upload">
+          <div class="drop-zone" id="drop-zone">
+            <input type="file" id="resume-file-input" accept=".pdf,.json" style="display: none;">
+            <div class="drop-icon-box">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            </div>
+            <div class="drop-primary-txt">Drop your new resume PDF or JSON here</div>
+            <div class="drop-sub-txt">or click to browse from device. Automatic parsing updates 3D constellation & portfolio in real-time.</div>
+            <div class="badge-tag-row">
+              <span class="format-badge">.PDF (Native Extraction)</span>
+              <span class="format-badge">.JSON (Structured Schema)</span>
+            </div>
+          </div>
+
+          <div class="sync-status-box" id="sync-status-box">
+            <div class="spinner"></div>
+            <div class="status-text" id="sync-status-text">Scanning Document Layers...</div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Raw JSON Editor -->
+        <div id="view-json" style="display: none;">
+          <div class="json-editor-box">
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              You can also directly view or fine-tune any field in the parsed schema below:
+            </p>
+            <textarea class="json-textarea" id="raw-json-editor" spellcheck="false"></textarea>
+            <button class="btn-primary-glow" id="btn-save-json" style="width: fit-content; padding: 10px 20px;">
+              Apply JSON Changes
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions-footer">
+        <button class="btn-secondary-glow" id="btn-reset-resume" style="padding: 10px 18px; font-size: 0.85rem;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span>Reset to Default</span>
+        </button>
+
+        <button class="action-btn-pill" id="btn-export-json" style="padding: 10px 18px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          <span>Export Schema (.JSON)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript App -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
