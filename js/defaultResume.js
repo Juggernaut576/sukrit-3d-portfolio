@@ -5,8 +5,8 @@ export const defaultResume = {
     location: "India",
     phone: "+91 6204729612",
     email: "sukritdebnath9@gmail.com",
-    linkedin: "https://linkedin.com/in/sukritdebnath",
-    github: "https://github.com",
+    linkedin: "https://www.linkedin.com/in/sukrit-gofw3/",
+    github: "https://github.com/Juggernaut576",
     summary: "Generative AI & Software Engineer with experience building enterprise multi-agent systems, Retrieval-Augmented Generation (RAG) architectures, and AI-driven backend integrations. Certified in Google Gemini Enterprise Agent Development and AWS Solutions Architect. Track record orchestrating LLM agents (Google ADK, Gemini, Llama 3.2), implementing prompt injection guardrails, hybrid vector retrieval (FAISS + BM25), and building REST/OData APIs for real-time enterprise AI consumption."
   },
   skills: {
@@ -87,7 +87,7 @@ export const defaultResume = {
       tech: ["Python", "Google ADK", "Gemini", "FastAPI"],
       description: "Orchestrated an enterprise-grade multi-agent system automating procurement workflows via specialized sourcing, compliance, and negotiation agents directed by a central orchestrator. Implemented multi-layered prompt injection guardrails using regex scanning and Pydantic validation, achieving 100% evaluation accuracy across 50+ procurement test scenarios.",
       badge: "Enterprise Multi-Agent",
-      link: "#"
+      link: "https://github.com/Juggernaut576/deal-architect"
     },
     {
       id: "proj-2",
@@ -95,23 +95,23 @@ export const defaultResume = {
       tech: ["Python", "Llama 3.2", "FAISS", "BM25"],
       description: "Deployed an AI document intelligence system extracting information from 100+ invoice documents with 95%+ retrieval precision using Llama 3.2 and Nomic Embed Text. Engineered a hybrid vector-sparse retrieval pipeline combining FAISS dense embeddings and BM25.",
       badge: "Hybrid RAG Pipeline",
-      link: "#"
+      link: "https://invoicedataextactionappchatbot-98uylykhwuurbl2wb39juz.streamlit.app/"
     },
     {
       id: "proj-3",
       title: "Age Detection System using Deep Learning",
       tech: ["Python", "PyTorch"],
       description: "Trained a deep learning age prediction model in PyTorch evaluated across 10,000+ images, achieving a Mean Absolute Error (MAE) of 4.54 years and 70% multi-class accuracy.",
-      badge: "Computer Vision",
-      link: "#"
+      badge: "Computer Vision & Deep Learning",
+      link: "https://drive.google.com/file/d/1dR3vEVPSo-VXn-1ehvyC9eLO33SMtNqg/view"
     },
     {
       id: "proj-4",
       title: "Music Recommender System using Machine Learning",
       tech: ["Python", "TF-IDF", "Cosine Similarity"],
       description: "Automated a Content-based Recommendation Engine analyzing 5,000+ song lyrics, extracting TF-IDF key vectors, and clustering closely related songs using Cosine Similarity.",
-      badge: "Machine Learning",
-      link: "#"
+      badge: "Machine Learning System",
+      link: "https://drive.google.com/file/d/1H0ch_eHv5euFoGqD3vvVIoELHxjp_Uh8/view"
     }
   ],
   education: [
@@ -132,28 +132,28 @@ export const defaultResume = {
     {
       name: "Certified Partner Specialist – Gemini Enterprise Agent Development",
       badge: "Google Cloud / Gemini",
-      link: "#"
+      link: "https://drive.google.com/file/d/1UaBOsutK6YjGHXAGQegRBsYPNH5MD2l3/view"
     },
     {
       name: "AWS Certified Solutions Architect – Associate",
       badge: "Amazon Web Services",
-      link: "#"
+      link: "https://drive.google.com/file/d/1toOH2_WwYfM097eIEklYUbJUNsODhWAW/view"
     },
     {
       name: "Certification in GenAI from AWS and DeepLearning.AI",
       badge: "DeepLearning.AI",
-      link: "#"
+      link: "https://drive.google.com/file/d/1KT_R2waMCWkL9diogB1j1Du-_UsbMBd_/view"
     },
     {
       name: "Certification in Java, CPP & Python from IIT Bombay",
       badge: "IIT Bombay",
-      link: "#"
+      link: "https://drive.google.com/drive/folders/1efDcAo570nNevJQIbhgE7RmhQUZ-gCwY"
     },
     {
       name: "Winner – Best Final Year Capstone Project",
       badge: "1st Place Winner (500+ Teams)",
       detail: "Awarded 1st Place among 500+ contenders at the VIT Capstone Project Expo.",
-      link: "#"
+      link: "https://drive.google.com/file/d/1UaBOsutK6YjGHXAGQegRBsYPNH5MD2l3/view"
     }
   ]
 };

@@ -7,7 +7,7 @@
 import { parsePdfResume, parseResumeText } from './pdfParser.js';
 import { defaultResume } from './defaultResume.js';
 
-const STORAGE_KEY = 'sukrit_portfolio_resume_data_v1';
+const STORAGE_KEY = 'sukrit_portfolio_resume_data_v2';
 
 export class ResumeSyncManager {
   constructor(onUpdateCallback) {

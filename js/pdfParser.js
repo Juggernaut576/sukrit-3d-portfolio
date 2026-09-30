@@ -1,6 +1,7 @@
 /**
  * Client-Side Resume Parser
  * Parses PDF documents (using PDF.js) and structured JSON files into the portfolio schema.
+ * Extracts text, structure, and interactive hyperlink annotations.
  */
 
 export async function parsePdfResume(arrayBuffer) {
@@ -17,11 +18,24 @@ export async function parsePdfResume(arrayBuffer) {
   const pdf = await loadingTask.promise;
   let fullText = '';
   const lines = [];
+  const annotations = [];
 
   for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
     const page = await pdf.getPage(pageNum);
     const textContent = await page.getTextContent();
-    
+    const pageAnnots = await page.getAnnotations();
+
+    // Extract link annotations
+    pageAnnots.forEach(a => {
+      if (a.url) {
+        annotations.push({
+          url: a.url,
+          y: a.rect ? a.rect[1] : 0,
+          pageNum
+        });
+      }
+    });
+
     // Group text items by Y coordinate to accurately reconstruct lines
     const lineMap = new Map();
     textContent.items.forEach(item => {
@@ -45,13 +59,13 @@ export async function parsePdfResume(arrayBuffer) {
     fullText += '\n---PAGE_BREAK---\n';
   }
 
-  return parseResumeText(lines, fullText);
+  return parseResumeText(lines, fullText, annotations);
 }
 
 /**
- * Intelligent section parsing from lines of text
+ * Intelligent section parsing from lines of text and extracted annotations
  */
-export function parseResumeText(lines, fullText) {
+export function parseResumeText(lines, fullText, annotations = []) {
   const result = {
     personal: {
       name: "Sukrit's Portfolio",
@@ -127,7 +141,7 @@ export function parseResumeText(lines, fullText) {
   if (linkedinMatch) {
     result.personal.linkedin = linkedinMatch[0].startsWith('http') ? linkedinMatch[0] : `https://${linkedinMatch[0]}`;
   } else {
-    result.personal.linkedin = 'https://linkedin.com/in/sukritdebnath';
+    result.personal.linkedin = 'https://www.linkedin.com/in/sukrit-gofw3/';
   }
 
   // 2. Process Summary
@@ -174,7 +188,6 @@ export function parseResumeText(lines, fullText) {
     let currentSubRole = null;
 
     sectionBlocks.experience.forEach(line => {
-      // Ignore standalone link lines in experience
       if (/^(–|-|—)?\s*(Link|View\s*Project|\bhttps?:\/\/)/i.test(line)) return;
 
       const dateMatch = line.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|\d{4})[a-z]*\s*\d{0,4}\s*[-–—]\s*(Present|\d{4}|[A-Za-z]+\s*\d{0,4})/i);
@@ -235,7 +248,6 @@ export function parseResumeText(lines, fullText) {
       }
     });
 
-    // Clean up empty experience records
     result.experience.forEach(exp => {
       if (exp.subRoles) {
         exp.subRoles = exp.subRoles.filter(s => s.title && s.title.length > 3 && !/^(link|– link)$/i.test(s.title));
@@ -247,26 +259,22 @@ export function parseResumeText(lines, fullText) {
   if (sectionBlocks.projects.length > 0) {
     let currentProj = null;
 
-    // Tech keywords pattern to accurately locate where the tech stack begins
     const techSplitRegex = /\b(Python|Java|JavaScript|TypeScript|React|PyTorch|TensorFlow|FastAPI|Google ADK|Gemini|Llama|Llama 3\.2|FAISS|BM25|TF-IDF|Cosine Similarity|Scikit-learn|AWS|GCP|C\+\+|SQL|OData|ABAP)\b/i;
 
     sectionBlocks.projects.forEach(line => {
       const trimmed = line.trim();
       if (!trimmed) return;
 
-      // Check if this line is just a link or artifact marker
       const isJustLink = /^(–|-|—)?\s*(Link|\[Link\]|GitHub|View\s*Project|\bhttps?:\/\/)/i.test(trimmed);
       if (isJustLink) {
         if (currentProj) {
           const urlMatch = trimmed.match(/https?:\/\/[^\s]+/);
           if (urlMatch) currentProj.link = urlMatch[0];
         }
-        return; // Skip: Never create a new project from a link line!
+        return;
       }
 
       const isBullet = trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*');
-
-      // Check if this line looks like a project header (not a bullet, not too long, contains title)
       const hasTechKeywords = techSplitRegex.test(trimmed);
       const isHeaderCandidate = !isBullet && trimmed.length < 130 && (hasTechKeywords || trimmed.includes('–') || trimmed.includes(' - ') || trimmed.includes(':'));
 
@@ -274,13 +282,11 @@ export function parseResumeText(lines, fullText) {
         let extractedTitle = trimmed;
         let extractedTech = [];
 
-        // Check if tech stack is tagged in parentheses: e.g. "Title (Python, FastAPI)"
         const parenMatch = trimmed.match(/\(([^)]+)\)$/);
         if (parenMatch && techSplitRegex.test(parenMatch[1])) {
           extractedTitle = trimmed.substring(0, parenMatch.index).trim();
           extractedTech = parenMatch[1].split(/[,|/]/).map(t => t.trim()).filter(Boolean);
         } else {
-          // Look for tech keyword boundary in the line
           const techMatch = trimmed.match(techSplitRegex);
           if (techMatch && techMatch.index > 5) {
             extractedTitle = trimmed.substring(0, techMatch.index).trim();
@@ -289,7 +295,6 @@ export function parseResumeText(lines, fullText) {
           } else if (trimmed.includes('–') || trimmed.includes(' - ')) {
             const parts = trimmed.split(/[-–—]/);
             if (parts.length > 2) {
-              // e.g. "Deal Architect – AI Multi-Agent Procurement System – Python, Google ADK"
               extractedTitle = parts.slice(0, 2).join(' – ').trim();
               extractedTech = parts.slice(2).join(' ').split(/[,/]/).map(t => t.trim()).filter(Boolean);
             } else {
@@ -299,10 +304,8 @@ export function parseResumeText(lines, fullText) {
           }
         }
 
-        // Clean trailing punctuation from title
         extractedTitle = extractedTitle.replace(/[-–—:|]+$/, '').trim();
 
-        // Assign a smart domain badge
         let smartBadge = 'AI Engineering';
         const titleAndTech = `${extractedTitle} ${extractedTech.join(' ')}`.toLowerCase();
         if (titleAndTech.includes('multi-agent') || titleAndTech.includes('adk') || titleAndTech.includes('procurement')) {
@@ -317,7 +320,6 @@ export function parseResumeText(lines, fullText) {
           smartBadge = extractedTech[0];
         }
 
-        // Only start project if title is legitimate
         if (extractedTitle.length > 5 && !/^(link|– link)$/i.test(extractedTitle)) {
           currentProj = {
             id: `proj-${result.projects.length + 1}`,
@@ -332,7 +334,6 @@ export function parseResumeText(lines, fullText) {
         }
       }
 
-      // If we are inside an active project, collect description
       if (currentProj) {
         let cleanText = trimmed.replace(/^[•\-*]\s*/, '').replace(/(\s*[-–—]\s*Link\b|\s*Link\b)$/i, '').trim();
         if (cleanText) {
@@ -345,13 +346,20 @@ export function parseResumeText(lines, fullText) {
       }
     });
 
-    // Strip trailing "- Link" artifacts from all descriptions and remove invalid empty projects
     result.projects = result.projects.filter(p => {
       if (!p.title || p.title.length < 4 || /^(link|– link)$/i.test(p.title.trim())) return false;
       if (!p.description || p.description.trim().length < 10) return false;
       p.description = p.description.replace(/(\s*[-–—]\s*Link\b|\s*Link\b)$/i, '').trim();
       p.tech = p.tech.filter(t => !/^(link|– link)$/i.test(t.trim()));
       return true;
+    });
+
+    // Pair project links from annotations if found
+    const projectUrlList = annotations.map(a => a.url).filter(u => u && !u.includes('linkedin.com') && !u.includes('mailto'));
+    result.projects.forEach((proj, idx) => {
+      if (proj.link === '#' && projectUrlList[idx]) {
+        proj.link = projectUrlList[idx];
+      }
     });
   }
 
@@ -380,24 +388,44 @@ export function parseResumeText(lines, fullText) {
     result.education = result.education.filter(e => e.institution && e.institution.length > 4);
   }
 
-  // 7. Process Certifications
+  // 7. Process Certifications with Verified Links
   if (sectionBlocks.certifications.length > 0) {
+    // Known verified certificate repository URLs for Sukrit
+    const knownCertMap = [
+      { pattern: /Gemini/i, link: "https://drive.google.com/file/d/1UaBOsutK6YjGHXAGQegRBsYPNH5MD2l3/view", badge: "Google Cloud / Gemini" },
+      { pattern: /AWS Solutions Architect|AWS Certified/i, link: "https://drive.google.com/file/d/1toOH2_WwYfM097eIEklYUbJUNsODhWAW/view", badge: "Amazon Web Services" },
+      { pattern: /DeepLearning\.AI|GenAI/i, link: "https://drive.google.com/file/d/1KT_R2waMCWkL9diogB1j1Du-_UsbMBd_/view", badge: "DeepLearning.AI" },
+      { pattern: /IIT Bombay/i, link: "https://drive.google.com/drive/folders/1efDcAo570nNevJQIbhgE7RmhQUZ-gCwY", badge: "IIT Bombay" },
+      { pattern: /Capstone|Winner/i, link: "https://drive.google.com/file/d/1UaBOsutK6YjGHXAGQegRBsYPNH5MD2l3/view", badge: "1st Place Winner (500+ Teams)" }
+    ];
+
+    // Filter drive / certificate URLs from annotations
+    const driveLinks = annotations.map(a => a.url).filter(u => u && u.includes('drive.google.com'));
+
     sectionBlocks.certifications.forEach(line => {
       const clean = line.replace(/^[•\-*]\s*/, '').replace(/—\s*Link|\s*-\s*Link/gi, '').trim();
       if (clean.length > 6 && !/^(link|– link)$/i.test(clean)) {
         let badge = 'Verified Credential';
-        if (clean.includes('Winner') || clean.includes('Award') || clean.includes('1st')) {
-          badge = 'Honors & Award';
-        } else if (clean.includes('Google') || clean.includes('Gemini')) {
-          badge = 'Google Cloud / Gemini';
-        } else if (clean.includes('AWS')) {
-          badge = 'Amazon Web Services';
+        let link = '#';
+
+        // Check against known mappings
+        for (const mapItem of knownCertMap) {
+          if (mapItem.pattern.test(clean)) {
+            badge = mapItem.badge;
+            link = mapItem.link;
+            break;
+          }
+        }
+
+        // If not matched but we have unused drive annotations, pair them
+        if (link === '#' && driveLinks.length > 0) {
+          link = driveLinks.shift();
         }
 
         result.certifications.push({
           name: clean,
           badge: badge,
-          link: '#'
+          link: link
         });
       }
     });

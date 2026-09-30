@@ -195,13 +195,30 @@ function renderCertifications(certsList) {
     return;
   }
 
-  container.innerHTML = certsList.map(cert => `
-    <div class="cert-card glassmorphism">
-      <div class="cert-badge-tag">${escapeHtml(cert.badge || 'Verified')}</div>
-      <h4 class="cert-name">${escapeHtml(cert.name)}</h4>
-      ${cert.detail ? `<p class="cert-detail">${escapeHtml(cert.detail)}</p>` : ''}
-    </div>
-  `).join('');
+  container.innerHTML = certsList.map(cert => {
+    const hasValidLink = cert.link && cert.link !== '#' && cert.link.startsWith('http');
+
+    return `
+      <div class="cert-card glassmorphism ${hasValidLink ? 'clickable-cert' : ''}">
+        <div class="cert-header">
+          <span class="cert-badge-tag">${escapeHtml(cert.badge || 'Verified')}</span>
+          ${hasValidLink ? `
+            <a href="${escapeHtml(cert.link)}" target="_blank" rel="noopener noreferrer" class="cert-link-btn" title="Open Verified Certificate in new tab">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+            </a>
+          ` : ''}
+        </div>
+        <h4 class="cert-name">${escapeHtml(cert.name)}</h4>
+        ${cert.detail ? `<p class="cert-detail">${escapeHtml(cert.detail)}</p>` : ''}
+        ${hasValidLink ? `
+          <a href="${escapeHtml(cert.link)}" target="_blank" rel="noopener noreferrer" class="cert-action-link">
+            <span>Verify Credential</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+          </a>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
 }
 
 function renderContact(personal) {
