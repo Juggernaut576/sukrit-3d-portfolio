@@ -153,7 +153,7 @@ export const defaultResume = {
       name: "Winner – Best Final Year Capstone Project",
       badge: "1st Place Winner (500+ Teams)",
       detail: "Awarded 1st Place among 500+ contenders at the VIT Capstone Project Expo.",
-      link: "https://drive.google.com/file/d/1UaBOsutK6YjGHXAGQegRBsYPNH5MD2l3/view"
+      link: ""
     }
   ]
 };

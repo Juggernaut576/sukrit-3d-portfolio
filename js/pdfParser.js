@@ -396,7 +396,7 @@ export function parseResumeText(lines, fullText, annotations = []) {
       { pattern: /AWS Solutions Architect|AWS Certified/i, link: "https://drive.google.com/file/d/1toOH2_WwYfM097eIEklYUbJUNsODhWAW/view", badge: "Amazon Web Services" },
       { pattern: /DeepLearning\.AI|GenAI/i, link: "https://drive.google.com/file/d/1KT_R2waMCWkL9diogB1j1Du-_UsbMBd_/view", badge: "DeepLearning.AI" },
       { pattern: /IIT Bombay/i, link: "https://drive.google.com/drive/folders/1efDcAo570nNevJQIbhgE7RmhQUZ-gCwY", badge: "IIT Bombay" },
-      { pattern: /Capstone|Winner/i, link: "https://drive.google.com/file/d/1UaBOsutK6YjGHXAGQegRBsYPNH5MD2l3/view", badge: "1st Place Winner (500+ Teams)" }
+      { pattern: /Capstone|Winner/i, link: "", badge: "1st Place Winner (500+ Teams)" }
     ];
 
     // Filter drive / certificate URLs from annotations
