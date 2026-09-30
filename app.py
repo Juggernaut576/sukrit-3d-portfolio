@@ -1,5 +1,6 @@
 import streamlit as st
-import os
+import streamlit.components.v1 as components
+from pathlib import Path
 
 st.set_page_config(
     page_title="Sukrit's Portfolio — Generative AI & Software Engineer",
@@ -8,16 +9,16 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Hide Streamlit default UI chrome for seamless full-viewport 3D spatial experience
+# Eliminate Streamlit padding, header, footer for true full-bleed 3D viewport
 st.markdown(
     """
     <style>
-    #MainMenu {visibility: hidden; display: none !important;}
-    header {visibility: hidden; display: none !important;}
-    footer {visibility: hidden; display: none !important;}
+    #MainMenu {visibility: hidden !important; display: none !important;}
+    header {visibility: hidden !important; display: none !important;}
+    footer {visibility: hidden !important; display: none !important;}
     div[data-testid="stDecoration"] {display: none !important;}
     div[data-testid="stStatusWidget"] {display: none !important;}
-    div[data-testid="stToolbar"] {visibility: hidden; display: none !important;}
+    div[data-testid="stToolbar"] {visibility: hidden !important; display: none !important;}
     section[data-testid="stSidebar"] {display: none !important;}
     .block-container {
         padding: 0rem !important;
@@ -30,7 +31,7 @@ st.markdown(
         padding: 0rem !important;
         margin: 0rem !important;
     }
-    iframe.portfolio-frame {
+    iframe {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
@@ -39,15 +40,20 @@ st.markdown(
         border: none !important;
         margin: 0 !important;
         padding: 0 !important;
-        z-index: 99999 !important;
+        z-index: 999999 !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Serve the compiled 3D interactive portfolio from Streamlit's static directory
-st.markdown(
-    '<iframe class="portfolio-frame" src="/app/static/index.html" allow="fullscreen; autoplay; clipboard-write"></iframe>',
-    unsafe_allow_html=True
-)
+# Load the self-contained portfolio HTML
+bundle_path = Path(__file__).parent / "static" / "bundle.html"
+if not bundle_path.exists():
+    import bundle
+    bundle.create_bundle()
+
+html_content = bundle_path.read_text(encoding="utf-8")
+
+# Render directly with Streamlit's official HTML component
+components.html(html_content, height=1000, scrolling=True)
