@@ -55,6 +55,20 @@ npm run dev
 npm run build
 ```
 
+### 🎈 Streamlit Deployment (Streamlit Cloud & Local)
+This portfolio is fully configured for one-click deployment on **Streamlit Community Cloud** (`share.streamlit.io`):
+```bash
+# 1. Install Python dependencies
+pip install -r requirements.txt
+
+# 2. Launch Streamlit server
+streamlit run app.py
+```
+**Deploying on Streamlit Cloud:**
+1. Connect your GitHub repository: `https://github.com/Juggernaut576/sukrit-3d-portfolio`.
+2. Select `app.py` (or `streamlit_app.py`) as the entrypoint.
+3. Click **Deploy**! Streamlit will automatically read `.streamlit/config.toml` and host the full-screen 3D interactive portfolio.
+
 ---
 
 ## 📂 Project Architecture
