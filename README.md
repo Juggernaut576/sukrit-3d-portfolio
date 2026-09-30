@@ -1,6 +1,11 @@
 # 🌐 3D Interactive Portfolio — Sukrit Debnath
 > **Generative AI & Software Engineer** • Multi-Agent Architecture • Google ADK • Gemini Enterprise • RAG • AWS Solutions Architect
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://sukrit-3d-portfolio-967v7yljci2p4nleebmssn.streamlit.app)
+[![GitHub stars](https://img.shields.io/github/stars/Juggernaut576/sukrit-3d-portfolio?style=social)](https://github.com/Juggernaut576/sukrit-3d-portfolio)
+
+### 🚀 Live Deployed App: [sukrit-3d-portfolio-967v7yljci2p4nleebmssn.streamlit.app](https://sukrit-3d-portfolio-967v7yljci2p4nleebmssn.streamlit.app)
+
 An ultra-modern, high-performance **Three.js 3D Portfolio** featuring a dynamic multi-agent neural constellation, holographic HUD interfaces, cinematic 60 FPS camera waypoints, and an **Automated In-Browser Resume Ingestion Engine** that updates all sections and 3D visual topology in real-time when a new resume is uploaded.
 
 ---

@@ -2,6 +2,7 @@
   "name": "sukrit-3d-portfolio",
   "version": "1.0.0",
   "description": "Interactive 3D Three.js Portfolio with Real-time Automated Resume Parsing and Sync Engine",
+  "homepage": "https://sukrit-3d-portfolio-967v7yljci2p4nleebmssn.streamlit.app",
   "type": "module",
   "scripts": {
     "dev": "vite",
