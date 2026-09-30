@@ -34,7 +34,8 @@ function renderExperience(experienceList) {
   }
 
   container.innerHTML = experienceList.map((exp) => `
-    <div class="timeline-card glassmorphism">
+    <div class="timeline-card glassmorphism tilt-target">
+      <div class="card-glare"></div>
       <div class="timeline-header">
         <div class="company-badge-wrap">
           <div class="timeline-icon-box">
@@ -144,7 +145,8 @@ function renderSkills(skillsObj) {
     const skillsList = skillsObj[cat] || [];
 
     return `
-      <div class="skill-category-card glassmorphism">
+      <div class="skill-category-card glassmorphism tilt-target">
+        <div class="card-glare"></div>
         <div class="skill-cat-header">
           <div class="skill-icon-bubble">${iconSvg}</div>
           <h3 class="skill-cat-title">${escapeHtml(cat)}</h3>
@@ -172,7 +174,8 @@ function renderEducation(educationList) {
   }
 
   container.innerHTML = educationList.map(edu => `
-    <div class="education-card glassmorphism">
+    <div class="education-card glassmorphism tilt-target">
+      <div class="card-glare"></div>
       <div class="edu-top">
         <div class="edu-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5zM6 12v5c3 3 9 3 12 0v-5"/></svg>
@@ -199,7 +202,8 @@ function renderCertifications(certsList) {
     const hasValidLink = cert.link && cert.link !== '#' && cert.link.startsWith('http');
 
     return `
-      <div class="cert-card glassmorphism ${hasValidLink ? 'clickable-cert' : ''}">
+      <div class="cert-card glassmorphism tilt-target ${hasValidLink ? 'clickable-cert' : ''}">
+        <div class="card-glare"></div>
         <div class="cert-header">
           <span class="cert-badge-tag">${escapeHtml(cert.badge || 'Verified')}</span>
           ${hasValidLink ? `
@@ -247,18 +251,22 @@ function setup3DCardTilt() {
       const y = e.clientY - rect.top;
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -8;
-      const rotateY = ((x - centerX) / centerX) * 8;
+      const rotateX = ((y - centerY) / centerY) * -9;
+      const rotateY = ((x - centerX) / centerX) * 9;
 
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(12px) scale3d(1.025, 1.025, 1.025)`;
 
       if (glare) {
-        glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.75), transparent 55%)`;
+        glare.style.opacity = '1';
+        glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.65), transparent 60%)`;
       }
     });
 
     card.addEventListener('mouseleave', () => {
-      card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+      card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px) scale3d(1, 1, 1)`;
+      if (glare) {
+        glare.style.opacity = '0';
+      }
     });
   });
 }

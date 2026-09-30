@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +33,7 @@
   <div class="scene-controls-dock glassmorphism" id="scene-controls-dock" aria-label="3D Controls">
     <div class="dock-header">
       <span class="dock-indicator"></span>
-      <span class="dock-label">3D Environment</span>
+      <span class="dock-label">3D Kinetic Mesh</span>
     </div>
     <div class="dock-btn-group">
       <button class="dock-btn active" id="btn-shape-knot" title="Fluid Ribbon Model">Ribbon</button>
@@ -41,7 +41,7 @@
       <button class="dock-btn" id="btn-shape-torus" title="Neural Torus Model">Torus</button>
       <div class="dock-divider"></div>
       <button class="dock-btn-icon" id="btn-toggle-orbit" title="Toggle 360° Free Orbit (Click & Drag to Rotate)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
         <span id="orbit-mode-label">Orbit: On</span>
       </button>
     </div>
@@ -70,6 +70,25 @@
         </ul>
 
         <div class="nav-actions">
+          <!-- Interactive Theme Slider -->
+          <div class="theme-slider-container" title="Switch Theme (Light / Dark / Cyber)">
+            <div class="theme-slider" id="theme-slider">
+              <button class="theme-tab active" data-theme="light" id="theme-btn-light" aria-label="Light Theme" title="Light Theme">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <span class="theme-tab-label">Light</span>
+              </button>
+              <button class="theme-tab" data-theme="dark" id="theme-btn-dark" aria-label="Dark Theme" title="Dark Theme">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <span class="theme-tab-label">Dark</span>
+              </button>
+              <button class="theme-tab" data-theme="cyber" id="theme-btn-cyber" aria-label="Cyber AI Theme" title="Cyber AI Theme">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span class="theme-tab-label">Cyber</span>
+              </button>
+              <div class="theme-slider-pill" id="theme-slider-pill"></div>
+            </div>
+          </div>
+
           <button id="sound-toggle-btn" class="icon-btn-pill" title="Toggle Audio Feedback" aria-label="Sound Toggle">
             <span id="sound-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
@@ -86,16 +105,18 @@
       </nav>
     </header>
 
-    <!-- Main Sections -->
+    <!-- Main Sections with 3D Depth -->
     <main class="main-content">
 
       <!-- SECTION: Hero / Overview -->
       <section id="hero" class="portfolio-section">
         <div class="hero-grid">
           <div class="hero-left">
-            <div class="status-badge">
-              <span class="pulse-indicator"></span>
-              <span>ENTERPRISE AI ARCHITECTURE</span>
+            <div class="spatial-hero-pill glassmorphism">
+              <span class="spatial-pulse-core"></span>
+              <span class="spatial-label">3D SPATIAL ENGINE ACTIVE</span>
+              <span class="spatial-dot-sep">•</span>
+              <span class="spatial-hint">Scroll to fly in 3D</span>
             </div>
 
             <h1 class="hero-name" id="hero-name">Sukrit's Portfolio</h1>
@@ -127,7 +148,8 @@
 
           <!-- Studio Telemetry Widget -->
           <div class="hero-right">
-            <div class="terminal-hud glassmorphism">
+            <div class="terminal-hud glassmorphism tilt-target">
+              <div class="card-glare"></div>
               <div class="terminal-header">
                 <div class="terminal-dots">
                   <span class="t-dot t-red"></span>
@@ -286,7 +308,7 @@
               </div>
               <div>
                 <div class="contact-lbl">LinkedIn Profile</div>
-                <a href="https://linkedin.com/in/sukritdebnath" target="_blank" rel="noopener noreferrer" class="contact-val" id="contact-linkedin">linkedin.com/in/sukritdebnath</a>
+                <a href="https://www.linkedin.com/in/sukrit-gofw3/" target="_blank" rel="noopener noreferrer" class="contact-val" id="contact-linkedin">linkedin.com/in/sukrit-gofw3</a>
               </div>
             </div>
 
@@ -296,7 +318,7 @@
               </div>
               <div>
                 <div class="contact-lbl">GitHub Repository</div>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="contact-val">github.com</a>
+                <a href="https://github.com/Juggernaut576" target="_blank" rel="noopener noreferrer" class="contact-val">github.com/Juggernaut576</a>
               </div>
             </div>
           </div>

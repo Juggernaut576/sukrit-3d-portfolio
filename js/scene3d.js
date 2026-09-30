@@ -1,21 +1,23 @@
 /**
- * Three.js 3D Visual Engine - Luxury Studio Edition
+ * Three.js 3D Visual Engine - Dynamic Spatial Edition
  * Features:
- * - 360° Interactive OrbitControls (click and drag to rotate the entire 3D world)
- * - Dynamic Geometry Mutator (Fluid Ribbon, Quantum Crystal, Neural Torus)
- * - PBR Physical Glass/Iridescent Materials with Contact Shadow Plane
- * - Smooth Camera Choreography & Particle Ambiance
+ * - Real-time continuous scroll-driven camera flight path
+ * - Theme Switcher Engine: Light Studio ⟷ Dark Obsidian ⟷ Cyber AI
+ * - 360° Interactive OrbitControls & Geometry Switcher
+ * - Reactive mouse physics and particle field dynamics
  */
 
 export class PortfolioScene {
   constructor(canvasContainerId) {
     this.container = document.getElementById(canvasContainerId);
     this.nodes = [];
-    this.activeSection = 'hero';
     this.currentShapeType = 'knot';
     this.isOrbitEnabled = true;
+    this.currentTheme = 'light';
 
     this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0, rayX: 0, rayY: 0 };
+    this.scrollProgress = 0;
+    this.targetScrollProgress = 0;
 
     this.initScene();
     this.createContactShadow();
@@ -28,7 +30,8 @@ export class PortfolioScene {
 
   initScene() {
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0xf1f5f9, 0.011);
+    this.fogColor = new THREE.Color(0xf1f5f9);
+    this.scene.fog = new THREE.FogExp2(this.fogColor, 0.012);
 
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -52,36 +55,33 @@ export class PortfolioScene {
 
     this.raycaster = new THREE.Raycaster();
 
-    // Studio 4-Point Daylight Rig
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.35);
-    this.scene.add(ambientLight);
+    // Studio 4-Point Lighting Rig
+    this.ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    this.scene.add(this.ambientLight);
 
     // Key Light
-    this.keyLight = new THREE.DirectionalLight(0xffffff, 1.9);
+    this.keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
     this.keyLight.position.set(22, 28, 25);
     this.keyLight.castShadow = true;
-    this.keyLight.shadow.mapSize.width = 1024;
-    this.keyLight.shadow.mapSize.height = 1024;
     this.scene.add(this.keyLight);
 
-    // Soft Blue Fill Light
-    this.fillLight = new THREE.PointLight(0x60a5fa, 2.6, 90);
+    // Fill Light
+    this.fillLight = new THREE.PointLight(0x60a5fa, 2.5, 90);
     this.fillLight.position.set(-25, -15, 20);
     this.scene.add(this.fillLight);
 
-    // Amethyst Rim Light
+    // Rim Light
     this.rimLight = new THREE.PointLight(0xa855f7, 2.4, 80);
     this.rimLight.position.set(16, -20, -10);
     this.scene.add(this.rimLight);
 
-    // Emerald Top Accent
+    // Top Light
     this.topLight = new THREE.PointLight(0x34d399, 1.8, 70);
     this.topLight.position.set(0, 24, 6);
     this.scene.add(this.topLight);
   }
 
   createContactShadow() {
-    // Soft contact shadow disc under the 3D core
     const canvas = document.createElement('canvas');
     canvas.width = 128;
     canvas.height = 128;
@@ -94,21 +94,22 @@ export class PortfolioScene {
     ctx.fillRect(0, 0, 128, 128);
 
     const shadowTexture = new THREE.CanvasTexture(canvas);
-    const shadowGeo = new THREE.PlaneGeometry(24, 24);
-    const shadowMat = new THREE.MeshBasicMaterial({
+    const shadowGeo = new THREE.PlaneGeometry(26, 26);
+    this.shadowMat = new THREE.MeshBasicMaterial({
       map: shadowTexture,
       transparent: true,
-      depthWrite: false
+      depthWrite: false,
+      opacity: 0.8
     });
 
-    this.shadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
+    this.shadowPlane = new THREE.Mesh(shadowGeo, this.shadowMat);
     this.shadowPlane.rotation.x = -Math.PI / 2;
     this.shadowPlane.position.y = -10;
     this.scene.add(this.shadowPlane);
   }
 
   createAtmosphere() {
-    const particleCount = 320;
+    const particleCount = 420;
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
@@ -119,9 +120,9 @@ export class PortfolioScene {
     const c4 = new THREE.Color(0xd97706); // Amber
 
     for (let i = 0; i < particleCount; i++) {
-      particlePositions[i * 3] = (Math.random() - 0.5) * 130;
-      particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 110;
-      particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 90 - 10;
+      particlePositions[i * 3] = (Math.random() - 0.5) * 140;
+      particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 120;
+      particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 100 - 10;
 
       const r = Math.random();
       const col = r < 0.35 ? c1 : (r < 0.65 ? c2 : (r < 0.85 ? c3 : c4));
@@ -133,15 +134,15 @@ export class PortfolioScene {
     particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
     particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
 
-    const particleMat = new THREE.PointsMaterial({
+    this.particleMat = new THREE.PointsMaterial({
       size: 1.6,
       vertexColors: true,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.6,
       blending: THREE.NormalBlending
     });
 
-    this.particles = new THREE.Points(particleGeo, particleMat);
+    this.particles = new THREE.Points(particleGeo, this.particleMat);
     this.scene.add(this.particles);
   }
 
@@ -153,7 +154,7 @@ export class PortfolioScene {
     this.constellationGroup = new THREE.Group();
     this.nodes = [];
 
-    // Central Art Piece: PBR Physical Glass/Iridescent Material
+    // Central Art Piece: PBR Physical Glass Material
     this.coreMat = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       roughness: 0.1,
@@ -171,9 +172,9 @@ export class PortfolioScene {
     this.coreMesh.position.set(0, 0, 0);
     this.constellationGroup.add(this.coreMesh);
 
-    // Orbiting Concentric Iridescent Glass Rings
+    // Orbiting Concentric Glass Rings
     const ringGeo = new THREE.TorusGeometry(6.6, 0.08, 16, 120);
-    const ringMat = new THREE.MeshPhysicalMaterial({
+    this.ringMat1 = new THREE.MeshPhysicalMaterial({
       color: 0x2563eb,
       roughness: 0.18,
       metalness: 0.8,
@@ -181,11 +182,11 @@ export class PortfolioScene {
       transparent: true,
       opacity: 0.65
     });
-    this.ring1 = new THREE.Mesh(ringGeo, ringMat);
+    this.ring1 = new THREE.Mesh(ringGeo, this.ringMat1);
     this.ring1.rotation.x = Math.PI / 3;
     this.constellationGroup.add(this.ring1);
 
-    const ringMat2 = new THREE.MeshPhysicalMaterial({
+    this.ringMat2 = new THREE.MeshPhysicalMaterial({
       color: 0x7c3aed,
       roughness: 0.18,
       metalness: 0.8,
@@ -193,7 +194,7 @@ export class PortfolioScene {
       transparent: true,
       opacity: 0.55
     });
-    this.ring2 = new THREE.Mesh(ringGeo, ringMat2);
+    this.ring2 = new THREE.Mesh(ringGeo, this.ringMat2);
     this.ring2.rotation.y = Math.PI / 4;
     this.constellationGroup.add(this.ring2);
 
@@ -240,7 +241,6 @@ export class PortfolioScene {
     } else if (type === 'torus') {
       return new THREE.TorusGeometry(3.6, 1.2, 32, 100);
     }
-    // Default 'knot'
     return new THREE.TorusKnotGeometry(3.2, 0.95, 140, 24, 2, 3);
   }
 
@@ -276,7 +276,6 @@ export class PortfolioScene {
       floatOffset: Math.random() * Math.PI * 2
     };
 
-    // Mini glowing halo around satellite
     const haloGeo = new THREE.TorusGeometry(spec.size * 1.5, 0.04, 12, 48);
     const haloMat = new THREE.MeshBasicMaterial({
       color: spec.color,
@@ -306,7 +305,7 @@ export class PortfolioScene {
       const curveMat = new THREE.LineBasicMaterial({
         color: node.spec.color,
         transparent: true,
-        opacity: 0.32
+        opacity: 0.35
       });
 
       const line = new THREE.Line(curveGeo, curveMat);
@@ -328,7 +327,6 @@ export class PortfolioScene {
       this.controls.autoRotate = false;
       this.controls.enabled = this.isOrbitEnabled;
 
-      // Allow dragging through the background
       this.renderer.domElement.style.pointerEvents = 'auto';
     }
   }
@@ -340,23 +338,85 @@ export class PortfolioScene {
     }
   }
 
+  setTheme(themeName) {
+    this.currentTheme = themeName;
+
+    if (themeName === 'dark') {
+      this.scene.fog.color.setHex(0x0a0f1d);
+      this.ambientLight.color.setHex(0x1e293b);
+      this.ambientLight.intensity = 1.0;
+      this.keyLight.color.setHex(0xffffff);
+      this.keyLight.intensity = 2.2;
+      this.fillLight.color.setHex(0x38bdf8);
+      this.fillLight.intensity = 3.0;
+      this.rimLight.color.setHex(0xa855f7);
+      this.rimLight.intensity = 3.0;
+
+      if (this.coreMat) {
+        this.coreMat.color.setHex(0x0f172a);
+        this.coreMat.metalness = 0.85;
+        this.coreMat.roughness = 0.15;
+        this.coreMat.transmission = 0.3;
+      }
+      if (this.shadowMat) this.shadowMat.opacity = 0.9;
+      if (this.particleMat) this.particleMat.opacity = 0.7;
+
+    } else if (themeName === 'cyber') {
+      this.scene.fog.color.setHex(0x04060f);
+      this.ambientLight.color.setHex(0x081226);
+      this.ambientLight.intensity = 0.8;
+      this.keyLight.color.setHex(0x00f0ff);
+      this.keyLight.intensity = 2.8;
+      this.fillLight.color.setHex(0x00f0ff);
+      this.fillLight.intensity = 4.0;
+      this.rimLight.color.setHex(0xec4899);
+      this.rimLight.intensity = 3.5;
+
+      if (this.coreMat) {
+        this.coreMat.color.setHex(0x00f0ff);
+        this.coreMat.metalness = 0.9;
+        this.coreMat.roughness = 0.1;
+        this.coreMat.transmission = 0.2;
+      }
+      if (this.shadowMat) this.shadowMat.opacity = 0.95;
+      if (this.particleMat) this.particleMat.opacity = 0.85;
+
+    } else {
+      // Default: Light Studio
+      this.scene.fog.color.setHex(0xf1f5f9);
+      this.ambientLight.color.setHex(0xffffff);
+      this.ambientLight.intensity = 1.4;
+      this.keyLight.color.setHex(0xffffff);
+      this.keyLight.intensity = 2.0;
+      this.fillLight.color.setHex(0x60a5fa);
+      this.fillLight.intensity = 2.5;
+      this.rimLight.color.setHex(0xa855f7);
+      this.rimLight.intensity = 2.4;
+
+      if (this.coreMat) {
+        this.coreMat.color.setHex(0xffffff);
+        this.coreMat.metalness = 0.2;
+        this.coreMat.roughness = 0.1;
+        this.coreMat.transmission = 0.45;
+      }
+      if (this.shadowMat) this.shadowMat.opacity = 0.75;
+      if (this.particleMat) this.particleMat.opacity = 0.55;
+    }
+
+    this.triggerShockwave();
+  }
+
   setupEvents() {
     window.addEventListener('resize', () => this.onWindowResize());
     window.addEventListener('mousemove', (e) => this.onMouseMove(e));
+    window.addEventListener('scroll', () => this.onScroll(), { passive: true });
+  }
 
-    // Section scroll observer for smooth camera choreography
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
-          const sectionId = entry.target.id;
-          if (sectionId && sectionId !== this.activeSection) {
-            this.setSectionWaypoint(sectionId);
-          }
-        }
-      });
-    }, { threshold: [0.3, 0.5] });
-
-    document.querySelectorAll('section[id]').forEach(sec => observer.observe(sec));
+  onScroll() {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (maxScroll > 0) {
+      this.targetScrollProgress = Math.min(Math.max(window.scrollY / maxScroll, 0), 1);
+    }
   }
 
   onWindowResize() {
@@ -375,72 +435,10 @@ export class PortfolioScene {
   }
 
   setSectionWaypoint(sectionId) {
-    this.activeSection = sectionId;
-
-    const waypoints = {
-      hero: {
-        pos: { x: 0, y: 0, z: 38 },
-        lookAt: { x: 0, y: 0, z: 0 }
-      },
-      about: {
-        pos: { x: 10, y: 3, z: 32 },
-        lookAt: { x: 0, y: 1, z: 0 }
-      },
-      experience: {
-        pos: { x: -12, y: 4, z: 28 },
-        lookAt: { x: -3, y: 2, z: 0 }
-      },
-      projects: {
-        pos: { x: 0, y: -5, z: 32 },
-        lookAt: { x: 0, y: 0, z: 0 }
-      },
-      skills: {
-        pos: { x: 0, y: 18, z: 28 },
-        lookAt: { x: 0, y: 0, z: 0 }
-      },
-      education: {
-        pos: { x: 12, y: -6, z: 30 },
-        lookAt: { x: 2, y: -1, z: 0 }
-      },
-      certifications: {
-        pos: { x: -8, y: 12, z: 30 },
-        lookAt: { x: 0, y: 3, z: 0 }
-      },
-      contact: {
-        pos: { x: 0, y: 0, z: 35 },
-        lookAt: { x: 0, y: 0, z: 0 }
-      }
-    };
-
-    const target = waypoints[sectionId] || waypoints.hero;
-
-    if (window.gsap) {
-      window.gsap.to(this.camera.position, {
-        x: target.pos.x,
-        y: target.pos.y,
-        z: target.pos.z,
-        duration: 1.6,
-        ease: 'power2.out'
-      });
-
-      window.gsap.to(this.targetCameraLookAt, {
-        x: target.lookAt.x,
-        y: target.lookAt.y,
-        z: target.lookAt.z,
-        duration: 1.6,
-        ease: 'power2.out',
-        onUpdate: () => {
-          if (this.controls) {
-            this.controls.target.copy(this.targetCameraLookAt);
-          }
-        }
-      });
-    } else {
-      this.camera.position.set(target.pos.x, target.pos.y, target.pos.z);
-      this.targetCameraLookAt.set(target.lookAt.x, target.lookAt.y, target.lookAt.z);
-      if (this.controls) {
-        this.controls.target.copy(this.targetCameraLookAt);
-      }
+    // When clicking nav buttons, smoothly scroll window which drives the continuous camera flight
+    const targetElem = document.getElementById(sectionId);
+    if (targetElem) {
+      targetElem.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
@@ -469,32 +467,48 @@ export class PortfolioScene {
 
     const time = performance.now() * 0.001;
 
-    // Update Orbit Controls if enabled
-    if (this.controls && this.controls.enabled) {
+    // Smoothly interpolate scroll progress for continuous 3D camera travel
+    this.scrollProgress += (this.targetScrollProgress - this.scrollProgress) * 0.08;
+    const sp = this.scrollProgress;
+
+    // Dynamic 3D Camera Flight Path along scroll:
+    // Interpolates through 3D waypoints as user scrolls from top to bottom
+    const flightAngle = sp * Math.PI * 2.2;
+    const flightRadius = 36 - Math.sin(sp * Math.PI) * 10;
+    const flightHeight = Math.sin(sp * Math.PI * 3) * 8 - (sp * 6);
+
+    const targetCamX = Math.sin(flightAngle) * flightRadius;
+    const targetCamY = flightHeight;
+    const targetCamZ = Math.cos(flightAngle) * flightRadius;
+
+    // Smooth mouse parallax easing
+    this.mouse.x += (this.mouse.targetX - this.mouse.x) * 0.05;
+    this.mouse.y += (this.mouse.targetY - this.mouse.y) * 0.05;
+
+    if (this.controls && this.controls.enabled && this.controls.state !== -1) {
       this.controls.update();
     } else {
-      // Mouse Parallax drift
-      this.mouse.x += (this.mouse.targetX - this.mouse.x) * 0.04;
-      this.mouse.y += (this.mouse.targetY - this.mouse.y) * 0.04;
+      // Fluid Camera Interpolation
+      this.camera.position.x += (targetCamX + this.mouse.x * 3.5 - this.camera.position.x) * 0.06;
+      this.camera.position.y += (targetCamY + this.mouse.y * 3.0 - this.camera.position.y) * 0.06;
+      this.camera.position.z += (targetCamZ - this.camera.position.z) * 0.06;
 
-      this.camera.position.x += (this.mouse.x * 2.2 - this.camera.position.x) * 0.015;
-      this.camera.position.y += (this.mouse.y * 1.8 - this.camera.position.y) * 0.015;
       this.camera.lookAt(this.targetCameraLookAt);
     }
 
-    // Rotate centerpiece
+    // Kinetic 3D Rotation on Central Sculpture
     if (this.coreMesh) {
-      this.coreMesh.rotation.x = time * 0.18;
-      this.coreMesh.rotation.y = time * 0.24;
+      this.coreMesh.rotation.x = time * 0.22 + sp * 4;
+      this.coreMesh.rotation.y = time * 0.32 + sp * 5;
     }
     if (this.ring1) {
-      this.ring1.rotation.z = time * 0.25;
-      this.ring2.rotation.x = time * -0.2;
+      this.ring1.rotation.z = time * 0.3 + sp * 3;
+      this.ring2.rotation.x = time * -0.25 - sp * 3;
     }
 
-    // Floating particles
+    // Atmospheric Particle Drift
     if (this.particles) {
-      this.particles.rotation.y = time * 0.015;
+      this.particles.rotation.y = time * 0.02 + sp * 0.5;
     }
 
     // Orbit nodes and update ribbons
@@ -502,22 +516,22 @@ export class PortfolioScene {
 
     this.nodes.forEach(node => {
       const data = node.mesh.userData;
-      data.angle += data.orbitSpeed;
-      const floatY = Math.sin(time * 1.2 + data.floatOffset) * 0.6;
+      data.angle += data.orbitSpeed + (sp * 0.005);
+      const floatY = Math.sin(time * 1.4 + data.floatOffset) * 0.7;
 
       node.mesh.position.x = Math.cos(data.angle) * data.orbitRadius;
       node.mesh.position.y = data.initialPos.y + floatY;
-      node.mesh.position.z = Math.sin(data.angle) * (data.orbitRadius * 0.25);
+      node.mesh.position.z = Math.sin(data.angle) * (data.orbitRadius * 0.35);
 
       if (node.haloMesh) {
-        node.haloMesh.rotation.z = time * 0.8;
+        node.haloMesh.rotation.z = time * 0.9;
       }
 
       if (node.ribbonLine) {
         const midPoint = new THREE.Vector3()
           .addVectors(corePos, node.mesh.position)
           .multiplyScalar(0.5);
-        midPoint.z += 2;
+        midPoint.z += 2.5;
 
         const curve = new THREE.QuadraticBezierCurve3(corePos, midPoint, node.mesh.position);
         node.ribbonLine.geometry.setFromPoints(curve.getPoints(24));

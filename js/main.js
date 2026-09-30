@@ -24,13 +24,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Setup Navigation & Button Smooth Scrolling
   setupNavigation(scene);
 
-  // 5. Setup 3D Scene Controls Dock
+  // 5. Setup Theme Slider (Light / Dark / Cyber)
+  setupThemeSlider(scene);
+
+  // 6. Setup 3D Scene Controls Dock
   setupSceneControls(scene);
 
-  // 6. Setup Audio Ambiance Synthesizer
+  // 7. Setup Audio Ambiance Synthesizer
   setupAudioEffects();
 
-  // 7. Setup Interactive Terminal Typing Effect
+  // 8. Setup Interactive Terminal Typing Effect
   setupTerminalEffect();
 });
 
@@ -223,3 +226,80 @@ function setupAudioEffects() {
     elem.addEventListener('click', () => playCyberChirp(780, 0.06));
   });
 }
+
+function setupThemeSlider(scene) {
+  const btnLight = document.getElementById('theme-btn-light');
+  const btnDark = document.getElementById('theme-btn-dark');
+  const btnCyber = document.getElementById('theme-btn-cyber');
+  const pill = document.getElementById('theme-slider-pill');
+  const slider = document.getElementById('theme-slider');
+
+  const themeBtns = {
+    light: btnLight,
+    dark: btnDark,
+    cyber: btnCyber
+  };
+
+  function updatePillPosition(theme) {
+    const activeBtn = themeBtns[theme];
+    if (!pill || !activeBtn || !slider) return;
+
+    Object.values(themeBtns).forEach(b => b && b.classList.remove('active'));
+    activeBtn.classList.add('active');
+
+    const sliderRect = slider.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+    const offsetLeft = btnRect.left - sliderRect.left;
+    const width = btnRect.width;
+
+    pill.style.width = `${width}px`;
+    pill.style.transform = `translateX(${offsetLeft - 3}px)`;
+  }
+
+  function applyTheme(theme, save = true) {
+    if (!themeBtns[theme]) theme = 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+
+    if (scene && typeof scene.setTheme === 'function') {
+      scene.setTheme(theme);
+    }
+
+    updatePillPosition(theme);
+
+    if (save) {
+      try {
+        localStorage.setItem('sukrit_portfolio_theme', theme);
+      } catch (e) {}
+    }
+  }
+
+  // Bind clicks
+  Object.entries(themeBtns).forEach(([theme, btn]) => {
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        applyTheme(theme, true);
+      });
+    }
+  });
+
+  // Load persisted theme or default to 'light'
+  let currentTheme = 'light';
+  try {
+    currentTheme = localStorage.getItem('sukrit_portfolio_theme') || 'light';
+  } catch (e) {}
+
+  applyTheme(currentTheme, false);
+
+  window.addEventListener('resize', () => {
+    const active = document.documentElement.getAttribute('data-theme') || 'light';
+    updatePillPosition(active);
+  });
+
+  // Re-adjust after layout calculation
+  setTimeout(() => {
+    const active = document.documentElement.getAttribute('data-theme') || 'light';
+    updatePillPosition(active);
+  }, 120);
+}
+
