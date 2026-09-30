@@ -81,29 +81,44 @@ function renderProjects(projectsList) {
   const container = document.getElementById('projects-grid');
   if (!container) return;
 
-  if (!projectsList || projectsList.length === 0) {
+  // Defensively filter out empty, phantom, or link-only cards
+  const validProjects = (projectsList || []).filter(proj => {
+    if (!proj || typeof proj !== 'object') return false;
+    const cleanTitle = (proj.title || '').trim();
+    if (!cleanTitle || cleanTitle.length < 4 || /^(link|– link|- link)$/i.test(cleanTitle)) return false;
+    if (!proj.description || proj.description.trim().length < 10) return false;
+    return true;
+  });
+
+  if (validProjects.length === 0) {
     container.innerHTML = `<div class="empty-state">No projects detected.</div>`;
     return;
   }
 
-  container.innerHTML = projectsList.map((proj, idx) => `
-    <div class="project-card glassmorphism tilt-target" id="${proj.id || 'proj-' + idx}">
-      <div class="card-glare"></div>
-      <div class="project-header">
-        <span class="project-badge">${escapeHtml(proj.badge || 'AI Project')}</span>
-        <a href="${proj.link || '#'}" target="_blank" rel="noopener noreferrer" class="project-link-btn" title="View Project Link">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-        </a>
-      </div>
-      
-      <h3 class="project-title">${escapeHtml(proj.title)}</h3>
-      <p class="project-desc">${escapeHtml(proj.description)}</p>
+  container.innerHTML = validProjects.map((proj, idx) => {
+    const cleanDesc = (proj.description || '').replace(/(\s*[-–—]\s*Link\b|\s*Link\b)$/i, '').trim();
+    const cleanTech = (proj.tech || []).filter(t => t && t.trim().length > 1 && !/^(link|– link|- link)$/i.test(t.trim()));
+    const badge = (proj.badge && !/^(link|– link)$/i.test(proj.badge)) ? proj.badge : (cleanTech[0] || 'AI Innovation');
 
-      <div class="project-tech-tags">
-        ${(proj.tech || []).map(t => `<span class="tech-tag">${escapeHtml(t)}</span>`).join('')}
+    return `
+      <div class="project-card glassmorphism tilt-target" id="${proj.id || 'proj-' + idx}">
+        <div class="card-glare"></div>
+        <div class="project-header">
+          <span class="project-badge">${escapeHtml(badge)}</span>
+          <a href="${proj.link || '#'}" target="_blank" rel="noopener noreferrer" class="project-link-btn" title="View Project Link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+          </a>
+        </div>
+        
+        <h3 class="project-title">${escapeHtml(proj.title)}</h3>
+        <p class="project-desc">${escapeHtml(cleanDesc)}</p>
+
+        <div class="project-tech-tags">
+          ${cleanTech.map(t => `<span class="tech-tag">${escapeHtml(t)}</span>`).join('')}
+        </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function renderSkills(skillsObj) {
