@@ -161,7 +161,6 @@ export class PortfolioScene {
       clearcoat: 1.0,
       clearcoatRoughness: 0.08,
       transmission: 0.45,
-      thickness: 1.4,
       reflectivity: 0.95
     });
 
